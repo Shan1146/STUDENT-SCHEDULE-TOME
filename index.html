@@ -282,7 +282,7 @@ function addClass(){
  classes.push(x);localStorage.setItem("block4Classes",JSON.stringify(classes));
  document.querySelectorAll("#classForm input").forEach(i=>i.value="");document.getElementById("classForm").style.display="none";render();
 }
-function getPin(){return localStorage.getItem("block4Pin")||"1234"}
+function getPin(){return localStorage.getItem("block4Pin")||"1146"}
 function unlock(){
  let pin=[1,2,3,4].map(i=>document.getElementById("p"+i).value).join("");
  if(pin===getPin()){sessionStorage.setItem("block4Unlocked","1");document.getElementById("lockScreen").style.display="none"}
