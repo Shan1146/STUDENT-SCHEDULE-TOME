@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f2747">
+<title>Block 4 — Class Schedule</title>
+<style>
+:root{
+  --navy:#0f2747;--blue:#2f6fed;--blue2:#eaf2ff;--ink:#172231;
+  --muted:#718096;--line:#dfe5ec;--bg:#f4f7fb;--card:#fff;
+  --green:#23855b;--greenbg:#e9f8f0;--yellow:#fff5c9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.top{background:var(--navy);color:#fff;padding:22px 18px 68px}
+.top-inner{max-width:1180px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}
+.brand h1{margin:0;font-size:24px}.brand p{margin:5px 0 0;color:#b9c7d9;font-size:13px}
+.lock-btn{background:#fff;color:var(--navy);border:0;border-radius:10px;padding:10px 13px;font-weight:800}
+.container{max-width:1180px;margin:-42px auto 35px;padding:0 14px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 35px #152a4012;padding:20px}
+.student-grid{display:grid;grid-template-columns:1.7fr 1fr .7fr;gap:12px}
+.info{border:1px solid var(--line);border-radius:13px;padding:13px 15px;background:#fbfcfe}
+.info small{display:block;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
+.info strong{display:block;margin-top:5px;font-size:16px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.btn{border:0;border-radius:10px;padding:10px 13px;font-weight:800}.primary{background:var(--blue);color:#fff}.light{background:var(--blue2);color:#2354b4}.gray{background:#edf0f4;color:#394756}
+.section{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 25px #152a4009;overflow:hidden}
+.section-head{padding:18px 18px 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;border-bottom:1px solid var(--line)}
+.section-head h2{margin:0;font-size:20px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.badge{background:var(--greenbg);color:var(--green);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+.table-scroll{overflow:auto}.schedule{width:100%;min-width:900px;border-collapse:collapse}
+.schedule th{background:#f7f9fc;color:#657284;font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:12px 10px;border-bottom:1px solid var(--line);text-align:left}
+.schedule td{padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+.schedule tr:last-child td{border-bottom:0}.schedule tr:nth-child(even){background:#fbfcfe}
+.code{font-weight:900;color:#2456b4}.course{font-weight:800}.sub{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.center{text-align:center}.teacher-empty{color:#a0a8b2;font-style:italic}
+.form{display:none;padding:17px;border-top:1px solid var(--line);background:#fafbfd}.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.field label{display:block;font-size:10px;text-transform:uppercase;font-weight:800;color:#667384;margin-bottom:5px}
+.field input,.field select{width:100%;border:1px solid #cfd7e1;border-radius:9px;padding:10px;background:#fff}
+.form-actions{margin-top:12px;display:flex;gap:8px}
+
+/* Our own weekly design */
+.week-toolbar{padding:15px 17px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fbfcfe;border-bottom:1px solid var(--line)}
+.week-toolbar .legend{font-size:11px;color:var(--muted)}
+.week-board{padding:16px}
+.week-grid{display:grid;grid-template-columns:repeat(7,minmax(145px,1fr));gap:10px;align-items:start}
+.day-card{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff;min-height:170px}
+.day-title{padding:12px 12px 10px;background:#f7f9fc;border-bottom:1px solid var(--line)}
+.day-title .dow{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:900}
+.day-title .date-label{font-size:17px;font-weight:900;margin-top:2px}
+.day-card.today{border-color:#79a5ff;box-shadow:0 0 0 2px #dbe8ff}.day-card.today .day-title{background:#eaf2ff}
+.day-list{padding:9px;display:flex;flex-direction:column;gap:8px}
+.no-class{padding:20px 8px;text-align:center;color:#a0a8b2;font-size:11px}
+.class-chip{border-radius:11px;padding:9px;background:#f1f6ff;border-left:4px solid var(--blue)}
+.class-chip .time{font-size:10px;font-weight:900;color:#2456b4}
+.class-chip .chip-code{font-size:12px;font-weight:900;margin-top:3px}
+.class-chip .chip-name{font-size:11px;line-height:1.25;margin-top:2px}
+.class-chip .meta{font-size:10px;color:#657284;margin-top:6px;line-height:1.35}
+.class-chip:nth-child(3n+2){background:#f2f8f4;border-left-color:#2f9a68}
+.class-chip:nth-child(3n+3){background:#fff8e9;border-left-color:#d28a19}
+.week-note{padding:0 17px 17px;color:var(--muted);font-size:11px}
+
+/* Mobile week: one clean day card per row */
+@media(max-width:850px){
+ .top{padding-bottom:55px}.container{margin-top:-32px}
+ .student-grid{grid-template-columns:1fr 1fr}.student-grid .info:first-child{grid-column:1/-1}
+ .week-grid{grid-template-columns:1fr 1fr}.day-card{min-height:140px}
+}
+@media(max-width:560px){
+ .top-inner{align-items:flex-start}.brand h1{font-size:20px}.lock-btn{padding:9px 10px;font-size:12px}
+ .container{padding:0 8px}.hero{padding:13px;border-radius:15px}
+ .student-grid{grid-template-columns:1fr}.student-grid .info:first-child{grid-column:auto}
+ .section{border-radius:15px}.section-head{padding:15px}
+ .week-board{padding:10px}.week-grid{grid-template-columns:1fr;gap:8px}
+ .day-card{display:block}.day-title{display:flex;justify-content:space-between;align-items:center;padding:10px 12px}
+ .day-title .date-label{font-size:15px}
+ .day-list{padding:8px;display:grid;grid-template-columns:1fr;gap:7px}
+ .class-chip{padding:9px 10px}
+ .form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <h1>Block 4 Schedule</h1>
+      <p>Student timetable • BSIT 2-4</p>
+    </div>
+    <button class="lock-btn" onclick="lockApp()">🔒 Lock</button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="student-grid">
+      <div class="info"><small>Full Name</small><strong id="studentName">SEAN CARLO F FONTANILLA</strong></div>
+      <div class="info"><small>Student ID</small><strong id="studentId">2265213</strong></div>
+      <div class="info"><small>Block</small><strong>BSIT 2-4</strong></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="toggleStudent()">Edit Student Info</button>
+      <button class="btn light" onclick="toggleClass()">Add Class</button>
+    </div>
+
+    <div class="form" id="studentForm">
+      <div class="form-grid">
+        <div class="field"><label>Full Name</label><input id="nameInput" value="SEAN CARLO F FONTANILLA"></div>
+        <div class="field"><label>Student ID</label><input id="idInput" value="2265213"></div>
+        <div class="field"><label>Block</label><input value="BSIT 2-4" disabled></div>
+      </div>
+      <div class="form-actions"><button class="btn primary" onclick="saveStudent()">Save</button><button class="btn gray" onclick="toggleStudent()">Cancel</button></div>
+    </div>
+
+    <div class="form" id="classForm">
+      <div class="form-grid">
+        <div class="field"><label>Class Code</label><input id="c1" placeholder="e.g. 9426"></div>
+        <div class="field"><label>Course Number</label><input id="c2" placeholder="e.g. ITPC 113"></div>
+        <div class="field"><label>Course Description</label><input id="c3"></div>
+        <div class="field"><label>Units</label><input id="c4" type="number" min="0"></div>
+        <div class="field"><label>Schedule</label><input id="c5" placeholder="08:30 AM - 09:30 AM"></div>
+        <div class="field"><label>Days</label><input id="c6" placeholder="MWF / TTHS"></div>
+        <div class="field"><label>Room</label><input id="c7"></div>
+        <div class="field"><label>Teacher</label><input id="c8"></div>
+      </div>
+      <div class="form-actions"><button class="btn primary" onclick="addClass()">Add Class</button><button class="btn gray" onclick="toggleClass()">Cancel</button></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><h2>Class Schedule</h2><p>Complete list of your subjects</p></div>
+      <div class="badge">23 UNITS</div>
+    </div>
+    <div class="table-scroll">
+      <table class="schedule">
+        <thead><tr><th>Class Code</th><th>Course</th><th>Course Description</th><th>Units</th><th>Schedule</th><th>Days</th><th>Room</th><th>Teacher</th></tr></thead>
+        <tbody id="scheduleRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><h2>Weekly View</h2><p>Every class is placed on its correct day and time.</p></div>
+      <div class="badge">LIVE FROM SCHEDULE</div>
+    </div>
+    <div class="week-toolbar">
+      <div class="legend">Tap a class to see its complete schedule information.</div>
+      <button class="btn light" onclick="window.scrollTo({top:document.querySelector('.section:last-of-type').offsetTop,behavior:'smooth'})">Jump</button>
+    </div>
+    <div class="week-board"><div id="weekGrid" class="week-grid"></div></div>
+    <div class="week-note">Times are calculated from the schedule you enter. The view automatically adjusts for morning and afternoon classes, including ranges such as 11:30 AM–1:30 PM.</div>
+  </section>
+
+  
+</main>
+
+<!-- PIN LOCK -->
+<div id="lockScreen" style="position:fixed;inset:0;background:linear-gradient(145deg,#0f2747,#21466f);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px">
+  <div style="width:min(390px,100%);background:#fff;border-radius:22px;padding:27px 20px;text-align:center;box-shadow:0 25px 70px #0006">
+    <div style="width:64px;height:64px;border-radius:18px;background:#0f2747;color:#f6df77;display:grid;place-items:center;margin:0 auto 13px;font-weight:900;font-size:23px">B4</div>
+    <h2 style="margin:0;color:#0f2747">Schedule Locked</h2>
+    <p style="color:#748091;font-size:13px">Enter your 4-digit PIN.</p>
+    <div style="display:flex;justify-content:center;gap:9px;margin:17px 0">
+      <input class="pinbox" id="p1" maxlength="1" inputmode="numeric" style="width:56px;height:56px;text-align:center;font-size:24px;border:1px solid #ccd5df;border-radius:12px">
+      <input class="pinbox" id="p2" maxlength="1" inputmode="numeric" style="width:56px;height:56px;text-align:center;font-size:24px;border:1px solid #ccd5df;border-radius:12px">
+      <input class="pinbox" id="p3" maxlength="1" inputmode="numeric" style="width:56px;height:56px;text-align:center;font-size:24px;border:1px solid #ccd5df;border-radius:12px">
+      <input class="pinbox" id="p4" maxlength="1" inputmode="numeric" style="width:56px;height:56px;text-align:center;font-size:24px;border:1px solid #ccd5df;border-radius:12px">
+    </div>
+    <div id="pinError" style="height:20px;color:#c62828;font-size:12px"></div>
+    <button onclick="unlock()" style="width:100%;border:0;border-radius:11px;padding:13px;background:#2f6fed;color:white;font-weight:900">Unlock</button>
+    <button onclick="showPinChange()" style="margin-top:12px;border:0;background:none;color:#2f6fed;font-size:12px;text-decoration:underline"></button>
+    <div id="pinChange" style="display:none;margin-top:12px">
+      <input id="newPin" maxlength="4" inputmode="numeric" placeholder="New 4-digit PIN" style="width:100%;padding:11px;border:1px solid #ccd5df;border-radius:9px">
+      <button onclick="changePin()" style="width:100%;margin-top:7px;border:0;border-radius:9px;padding:11px;background:#0f2747;color:#fff;font-weight:800">Save PIN</button>
+      <div style="font-size:10px;color:#8a939d;margin-top:6px">First-time/default PIN: 1234</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_CLASSES=[
+["7024","NSTP-CWTS 1","FOUNDATIONS OF SERVICE","3","01:30 PM - 02:30 PM","TTHS","D906","JOHN PAOLO MAGNO"],
+["9426","ITPC 113","DISCRETE MATHEMATICS","3","08:30 AM - 09:30 AM","MWF","D326","VICTORIANO JR. FERRER"],
+["9606","ITPC 211","REQUIREMENTS ANALYSIS AND MODELING","3","01:30 PM - 02:30 PM","MWF","D504","LAMBERT FAMORCA"],
+["9608A","ITPC 213","NETWORK FUNDAMENTALS","2","03:30 PM - 04:30 PM","MTH","D322","Sandra Barril"],
+["9608B","ITPC 213L","NETWORK FUNDAMENTALS (LAB)","1","04:30 PM - 06:00 PM","TF","D522","Sandra Barril"],
+["9609","GRIZAL","THE LIFE AND WORKS OF RIZAL","3","07:30 AM - 08:30 AM","MWF","D326","Kyle Nathalie Josue"],
+["9610","GSTS","SCIENCE, TECHNOLOGY, AND SOCIETY","3","10:30 AM - 11:30 AM","TTHS","D626","Marfred Kenneth Cheung"],
+["9611","CFE 103","CATHOLIC FOUNDATION OF MISSION","3","11:30 AM - 12:30 PM","TTHS","D508","JESTER PAUL LINGBAWAN"],
+["9612","FIT OA","PHYSICAL ACTIVITY TOWARDS HEALTH AND FITNESS (OUTDOOR AND ADVENTURE ACTIVITIES)","2","11:30 AM - 01:30 PM","M","D402","ARSENIO PASCUAL"]
+];
+
+let classes=JSON.parse(localStorage.getItem("block4Classes")||"null")||DEFAULT_CLASSES;
+let student=JSON.parse(localStorage.getItem("block4Student")||"null")||{name:"Your Full Name",id:"Your ID"};
+
+const DAYS=[
+ {key:"U",name:"Sunday",short:"Sun"},{key:"M",name:"Monday",short:"Mon"},{key:"T",name:"Tuesday",short:"Tue"},
+ {key:"W",name:"Wednesday",short:"Wed"},{key:"H",name:"Thursday",short:"Thu"},{key:"F",name:"Friday",short:"Fri"},{key:"S",name:"Saturday",short:"Sat"}
+];
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function parseOneTime(s){
+  let z=s.trim().toUpperCase().replace(/\s+/g," ");
+  let ap=(z.match(/AM|PM/)||[])[0]||"";
+  let raw=z.replace(/AM|PM/g,"").trim();
+  let nums=raw.split(":");
+  let h=parseInt(nums[0],10),m=parseInt(nums[1]||"0",10);
+  if(ap==="PM"&&h<12)h+=12;if(ap==="AM"&&h===12)h=0;
+  return h*60+m;
+}
+function parseRange(text){
+  let parts=text.replace(/[–—]/g,"-").split("-");
+  if(parts.length<2)return null;
+  let left=parts[0].trim(),right=parts.slice(1).join("-").trim();
+  let rightAP=(right.match(/AM|PM/i)||[])[0];
+  let leftAP=(left.match(/AM|PM/i)||[])[0];
+  if(!leftAP && rightAP){
+    let leftNums=left.replace(/[^0-9:]/g,"").split(":");
+    let lh=parseInt(leftNums[0]||"0",10);
+    // Infer 11:30 - 01:30 PM as 11:30 AM - 1:30 PM,
+    // while 1:30 - 2:30 PM stays in the afternoon.
+    if(rightAP.toUpperCase()==="PM" && lh>=7 && lh<=12) left += " AM";
+    else left += " "+rightAP;
+  }
+  let a=parseOneTime(left),b=parseOneTime(right);
+  if(b<=a)b+=12*60;
+  return {start:a,end:b};
+}
+function dayKeys(s){
+  let result=[];
+  for(const ch of String(s).toUpperCase().replace(/[^MTWHFSU]/g,"")){
+    if(!result.includes(ch))result.push(ch);
+  }
+  return result;
+}
+function render(){
+ document.getElementById("studentName").textContent=student.name;
+ document.getElementById("studentId").textContent=student.id;
+ document.getElementById("scheduleRows").innerHTML=classes.map(x=>`
+ <tr><td class="code">${esc(x[0])}</td><td><b>${esc(x[1])}</b></td><td>${esc(x[2])}</td>
+ <td class="center">${esc(x[3])}</td><td>${esc(x[4])}</td><td class="center">${esc(x[5])}</td>
+ <td class="center">${esc(x[6])}</td><td class="${x[7]?"":"teacher-empty"}">${esc(x[7]||"Not added")}</td></tr>`).join("");
+ renderWeek();
+}
+function renderWeek(){
+ const grid=document.getElementById("weekGrid");grid.innerHTML="";
+ const today=new Date().getDay();
+ DAYS.forEach((day,di)=>{
+   let card=document.createElement("div");card.className="day-card"+(today===di?" today":"");
+   let title=document.createElement("div");title.className="day-title";
+   title.innerHTML=`<div class="dow">${day.short}</div><div class="date-label">${day.name}</div>`;
+   card.appendChild(title);
+   let list=document.createElement("div");list.className="day-list";
+   let items=classes.filter(x=>dayKeys(x[5]).includes(day.key)).map(x=>({x,r:parseRange(x[4])}));
+   items.sort((a,b)=>(a.r?.start??99999)-(b.r?.start??99999));
+   if(!items.length)list.innerHTML='<div class="no-class">No class</div>';
+   items.forEach(({x})=>{
+      let chip=document.createElement("div");chip.className="class-chip";
+      chip.innerHTML=`<div class="time">${esc(x[4])}</div>
+      <div class="chip-code">${esc(x[1])}</div>
+      <div class="chip-name">${esc(x[2])}</div>
+      <div class="meta">Room ${esc(x[6])}${x[7]?" • "+esc(x[7]):""}</div>`;
+      list.appendChild(chip);
+   });
+   card.appendChild(list);grid.appendChild(card);
+ });
+}
+function toggleStudent(){let x=document.getElementById("studentForm");x.style.display=x.style.display==="block"?"none":"block";nameInput.value=student.name;idInput.value=student.id}
+function saveStudent(){student={name:nameInput.value.trim()||"Your Full Name",id:idInput.value.trim()||"Your ID"};localStorage.setItem("block4Student",JSON.stringify(student));document.getElementById("studentForm").style.display="none";render()}
+function toggleClass(){let x=document.getElementById("classForm");x.style.display=x.style.display==="block"?"none":"block"}
+function addClass(){
+ let x=["c1","c2","c3","c4","c5","c6","c7","c8"].map(id=>document.getElementById(id).value.trim());
+ if(!x[0]||!x[1]||!x[2]||!x[4]||!x[5]){alert("Please enter Class Code, Course Number, Description, Schedule, and Days.");return}
+ classes.push(x);localStorage.setItem("block4Classes",JSON.stringify(classes));
+ document.querySelectorAll("#classForm input").forEach(i=>i.value="");document.getElementById("classForm").style.display="none";render();
+}
+function getPin(){return localStorage.getItem("block4Pin")||"1234"}
+function unlock(){
+ let pin=[1,2,3,4].map(i=>document.getElementById("p"+i).value).join("");
+ if(pin===getPin()){sessionStorage.setItem("block4Unlocked","1");document.getElementById("lockScreen").style.display="none"}
+ else{document.getElementById("pinError").textContent="Incorrect PIN.";document.querySelectorAll(".pinbox").forEach(x=>x.value="");document.getElementById("p1").focus()}
+}
+function lockApp(){sessionStorage.removeItem("block4Unlocked");document.getElementById("lockScreen").style.display="flex";document.querySelectorAll(".pinbox").forEach(x=>x.value="");document.getElementById("p1").focus()}
+function showPinChange(){let x=document.getElementById("pinChange");x.style.display=x.style.display==="block"?"none":"block"}
+function changePin(){let p=document.getElementById("newPin").value;if(!/^\d{4}$/.test(p)){alert("PIN must be exactly 4 digits.");return}localStorage.setItem("block4Pin",p);document.getElementById("newPin").value="";alert("PIN changed.");}
+document.querySelectorAll(".pinbox").forEach((el,i,all)=>{el.addEventListener("input",()=>{el.value=el.value.replace(/\D/g,"").slice(0,1);if(el.value&&i<3)all[i+1].focus()});el.addEventListener("keydown",e=>{if(e.key==="Backspace"&&!el.value&&i>0)all[i-1].focus();if(e.key==="Enter")unlock()})});
+if(sessionStorage.getItem("block4Unlocked")==="1")document.getElementById("lockScreen").style.display="none";
+render();
+</script>
+</body>
+</html>
